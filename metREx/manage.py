@@ -13,7 +13,7 @@ if __package__ is None:
 from .app.main import *
 
 
-config_name = os.getenv('BOILERPLATE_ENV', 'dev')
+config_name = os.getenv('BOILERPLATE_ENV', 'prod')
 
 app = create_app(config_name)
 
@@ -37,7 +37,7 @@ def run():
     if not (app.debug and os.getenv('WERKZEUG_RUN_MAIN') is None):
         start_scheduler(config_name)
 
-    app.run(host=host, port=port)
+    app.run(host=host, port=port, debug=app.debug, use_debugger=app.debug, use_reloader=app.debug)
 
 
 if __name__ == '__main__':

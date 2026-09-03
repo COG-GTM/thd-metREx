@@ -99,11 +99,11 @@ template_prefix = os.getenv('JOB_PREFIX', app_prefix + '_TEMPLATE_')
 
 
 class Config:
-    DEBUG = str_to_bool(os.getenv('DEBUG', True))
+    DEBUG = False
     TESTING = False
     SECRET_KEY = os.getenv('SECRET_KEY', get_secret_key_from_file(os.getenv('SECRET_PATH'), 'secrets.yml'))
 
-    ERROR_INCLUDE_MESSAGE = str_to_bool(os.getenv('ERROR_INCLUDE_MESSAGE', True))
+    ERROR_INCLUDE_MESSAGE = str_to_bool(os.getenv('ERROR_INCLUDE_MESSAGE', False))
     RESTPLUS_MASK_SWAGGER = False
     SWAGGER_UI_REQUEST_DURATION = True
 
@@ -239,6 +239,9 @@ class Config:
 
 class DevelopmentConfig(Config):
     ENV = 'development'
+    DEBUG = str_to_bool(os.getenv('DEBUG', True))
+
+    ERROR_INCLUDE_MESSAGE = str_to_bool(os.getenv('ERROR_INCLUDE_MESSAGE', True))
 
 
 class TestingConfig(Config):
@@ -284,9 +287,7 @@ class TestingConfig(Config):
 
 
 class ProductionConfig(Config):
-    DEBUG = str_to_bool(os.getenv('DEBUG', False))
-
-    ERROR_INCLUDE_MESSAGE = str_to_bool(os.getenv('ERROR_INCLUDE_MESSAGE', False))
+    ENV = 'production'
 
 
 config_by_name = dict(
