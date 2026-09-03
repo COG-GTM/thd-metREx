@@ -130,6 +130,7 @@ class Config:
     SCHEDULER_JOBS = []
 
     SCHEDULER_API_ENABLED = False
+    SCHEDULER_API_KEY = os.getenv('SCHEDULER_API_KEY')
 
     SCHEDULER_EXECUTORS = {
         'default': ThreadPoolExecutor(max_workers=int(os.getenv('MAX_WORKERS', '10'))),
@@ -245,6 +246,7 @@ class TestingConfig(Config):
     ENV = 'development'
     TESTING = True
     PRESERVE_CONTEXT_ON_EXCEPTION = False
+    SCHEDULER_API_KEY = 'test-scheduler-api-key'
 
     SQLALCHEMY_ENGINE_OPTIONS = {
         'poolclass': SingletonThreadPool
