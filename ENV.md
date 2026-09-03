@@ -1,8 +1,9 @@
 ### Supported ENV Variables
 
 The following ENV variables can be used to configure various application behaviors:
-- **BOILERPLATE_ENV**: (Default: `dev`) The configuration profile applied to running app instances. Possible values: `dev`, `test`, or `prod`.
-- **DEBUG**: (Default: `true` if **BOILERPLATE_ENV** is `dev`, or false otherwise) Whether debug mode is enabled.
+- **BOILERPLATE_ENV**: (Default: `prod`) The configuration profile applied to running app instances. Possible values: `dev`, `test`, or `prod`.
+- **DEBUG**: (Default: `true` if **BOILERPLATE_ENV** is `dev`) Whether debug mode (Werkzeug interactive debugger and reloader) is enabled. Only honored when **BOILERPLATE_ENV** is `dev`; it is always disabled for `test` and `prod`.
+- **ERROR_INCLUDE_MESSAGE**: (Default: `true` if **BOILERPLATE_ENV** is `dev`, or `false` otherwise) Whether unhandled exception messages are returned to API clients.
 - **IP_ADDRESS**: (Default: `127.0.0.1`) The internal IP address of the running app instance.
 - **PORT**: (Default: `5000`) The port on which the application listens for requests.
 - **LD_LIBRARY_PATH**: (Linux) A colon-separated list of the directories containing required database client libraries. Required for some SQLAlchemy drivers.

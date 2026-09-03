@@ -37,6 +37,7 @@ RUN apt-get update && \
 COPY --from=build-image /opt/venv /opt/venv
 
 ENV IP_ADDRESS=0.0.0.0 \
+    BOILERPLATE_ENV=prod \
     PATH="/opt/venv/bin:$PATH" \
     VIRTUAL_ENV="/opt/venv"
 EXPOSE 5000
