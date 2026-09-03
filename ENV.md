@@ -17,6 +17,7 @@ The following ENV variables can be used to configure various application behavio
 - **ERROR_INCLUDE_MESSAGE**: (Default: `true`) Whether to include detailed error messages in API responses. A generic "Internal Server Error" message will be returned on failure when `false`.
 - **LIMIT_JOB_EXECUTION_TIME**: (Default: `false`) Whether to require each job to complete execution within its defined interval. If `true`, any job which does not finish before its next scheduled runtime will be terminated to prevent the next run from being skipped.*
 - **SUSPEND_JOB_ON_FAILURE**: (Default: `false`) Whether to suspend metric exporter jobs immediately on failure. Suspended jobs may be resumed manually via the Scheduler API or by restarting the application.
+- **SCHEDULER_API_KEY**: The shared secret required (via the `X-API-Key` header or `Authorization: Bearer <key>`) to access the Scheduler API under `/scheduler`. The Scheduler API returns 503 for every request when this is not set.
 - **JOB_INITIAL_DELAY_SECONDS**: (Default: `15`) The number of seconds to wait before running each job for the first time. Can be adjusted to allow time for resources to initialize on startup or to avoid conflicts.
 - **APIALCHEMY_APPD_SSL_VERIFY**: (Default: `true`) Whether to perform certificate verification for AppDynamics API connections.
 - **APIALCHEMY_EXTRAHOP_SSL_VERIFY**: (Default: `true`) Whether to perform certificate verification for ExtraHop API connections.

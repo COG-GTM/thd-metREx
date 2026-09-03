@@ -42,7 +42,14 @@ env = AppEnv()
 kwargs_api = {
     'title': __title__,
     'version': __version__,
-    'description': __description__
+    'description': __description__,
+    'authorizations': {
+        'apikey': {
+            'type': 'apiKey',
+            'in': 'header',
+            'name': 'X-API-Key'
+        }
+    }
 }
 
 if env.name is not None:
