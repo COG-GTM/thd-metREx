@@ -2,11 +2,15 @@ import json
 import secrets
 import unittest
 
+from collections import Counter
+from unittest import mock
+
 from datetime import datetime
 
 from faker import Faker
 
 from ..base import BaseTestCase
+from metREx.app.main.service import metrics_service
 from metREx.app.main.service.metrics_service import db, Metrics, get_metric_info
 
 
@@ -67,6 +71,23 @@ class TestDatabaseBlueprint(BaseTestCase):
                         metric_value = info[0]
 
                         self.assertIsInstance(metric_value, int)
+
+    def test_database_metrics_format_each_column_once_per_run(self):
+        for _ in range(4):
+            db.session.add(Metric(value=secrets.randbelow(255), label1=self.fake.word(), label2=self.fake.word()))
+
+        db.session.commit()
+
+        for job in self.app.config.get('SCHEDULER_JOBS'):
+            with mock.patch.object(metrics_service, 'format_label', wraps=metrics_service.format_label) as format_label, \
+                    mock.patch.object(metrics_service, 'format_metric', wraps=metrics_service.format_metric) as format_metric:
+                Metrics._get_database_metrics(*job['args'][1:])
+
+            for patched in (format_label, format_metric):
+                calls = Counter(call.args[0] for call in patched.call_args_list)
+
+                self.assertTrue(calls)
+                self.assertEqual(set(calls.values()), {1})
 
     def test_metric_created(self):
         if self.metric is not None:
