@@ -42,7 +42,6 @@ def aggregate_values_by_func(func, values):
     return value
 
 
-@lru_cache(maxsize=4096)
 def format_label(string):
     label = re.sub(r'[().\'\"]|((?<![/:])/)', '', string)
     label = re.sub(r'^%(?=\w)', 'percent ', label)
@@ -57,7 +56,6 @@ def format_label(string):
     return label.lower()
 
 
-@lru_cache(maxsize=4096)
 def format_metric(string):
     metric = re.sub(r'(?<=\S)(/sec)', ' per sec', string)
     metric = re.sub(r'[ \-]', '_', metric)
@@ -419,6 +417,10 @@ class Metrics:
         def is_value_column(column):
             return is_element_in_iterable_no_case(column, value_columns)
 
+        # Every row repeats the same column names, so normalise each name once per run.
+        cached_format_label = lru_cache(maxsize=None)(format_label)
+        cached_format_metric = lru_cache(maxsize=None)(format_metric)
+
         collector_metrics = {}
 
         with aps.app.app_context():
@@ -469,11 +471,11 @@ class Metrics:
                             label_dict['instance'] = instance
 
                     label_dict.update(OrderedDict([
-                        (format_label(column), to_string(row[column])) for column in row.keys() if column not in normalized_value_columns and column != normalized_timestamp_column
+                        (cached_format_label(column), to_string(row[column])) for column in row.keys() if column not in normalized_value_columns and column != normalized_timestamp_column
                     ]))
 
                     label_dict.update(OrderedDict([
-                        (format_label(label), value) for label, value in static_labels if format_label(label) not in label_dict.keys()
+                        (cached_format_label(label), value) for label, value in static_labels if cached_format_label(label) not in label_dict.keys()
                     ]))
 
                     if db_tzinfo is not None:
@@ -486,7 +488,7 @@ class Metrics:
                     json_label_data = json.dumps(label_dict)
 
                     for column in normalized_value_columns:
-                        metric_name = '%s.%s' % (prefix, format_metric(column))
+                        metric_name = '%s.%s' % (prefix, cached_format_metric(column))
 
                         if metric_name not in collector_metrics.keys():
                             collector_metrics[metric_name] = {}
