@@ -79,15 +79,16 @@ class TestDatabaseBlueprint(BaseTestCase):
         db.session.commit()
 
         for job in self.app.config.get('SCHEDULER_JOBS'):
-            with mock.patch.object(metrics_service, 'format_label', wraps=metrics_service.format_label) as format_label, \
-                    mock.patch.object(metrics_service, 'format_metric', wraps=metrics_service.format_metric) as format_metric:
-                Metrics._get_database_metrics(*job['args'][1:])
+            for _ in range(2):
+                with mock.patch.object(metrics_service, 'format_label', wraps=metrics_service.format_label) as format_label, \
+                        mock.patch.object(metrics_service, 'format_metric', wraps=metrics_service.format_metric) as format_metric:
+                    Metrics._get_database_metrics(*job['args'][1:])
 
-            for patched in (format_label, format_metric):
-                calls = Counter(call.args[0] for call in patched.call_args_list)
+                for patched in (format_label, format_metric):
+                    calls = Counter(args[0] for args, kwargs in patched.call_args_list)
 
-                self.assertTrue(calls)
-                self.assertEqual(set(calls.values()), {1})
+                    self.assertTrue(calls)
+                    self.assertEqual(set(calls.values()), {1})
 
     def test_metric_created(self):
         if self.metric is not None:
