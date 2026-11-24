@@ -6,6 +6,8 @@ from collections import OrderedDict
 
 from datetime import datetime, timezone
 
+from functools import lru_cache
+
 import inflect
 import numpy
 import pytz
@@ -40,6 +42,7 @@ def aggregate_values_by_func(func, values):
     return value
 
 
+@lru_cache(maxsize=4096)
 def format_label(string):
     label = re.sub(r'[().\'\"]|((?<![/:])/)', '', string)
     label = re.sub(r'^%(?=\w)', 'percent ', label)
@@ -54,6 +57,7 @@ def format_label(string):
     return label.lower()
 
 
+@lru_cache(maxsize=4096)
 def format_metric(string):
     metric = re.sub(r'(?<=\S)(/sec)', ' per sec', string)
     metric = re.sub(r'[ \-]', '_', metric)
